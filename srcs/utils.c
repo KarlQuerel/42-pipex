@@ -1,16 +1,21 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kquerel <kquerel@student.42.fr>            +#+  +:+       +#+        */
+/*   By: karl <karl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/12 17:55:33 by kquerel           #+#    #+#             */
-/*   Updated: 2023/07/14 19:06:26 by kquerel          ###   ########.fr       */
+/*   Updated: 2023/07/17 19:30:43 by karl             ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../includes/pipex.h"
+
+void	functionname(int c)
+{
+	
+}
 
 /* Classic good ol' put_str */
 void	ft_putstr(char *str)
@@ -26,33 +31,10 @@ void	ft_putstr(char *str)
 }
 
 /* Handles exit behavior */
-void	ft_exit(int exit_code)
+void	ft_exit(char *error)
 {
-	// MAYBE USE PUTSTRFD IS BETTER, to check!
-	
-	if (exit_code == 0)
-		ft_putstr("Error!\nInvalid number of arguments\n");
-	else if (exit_code == 1)
-		ft_putstr("Error!\nPipe failed\n");
-	else if (exit_code == 2)
-		ft_putstr("Error!\nFork failed\n");
-	else if (exit_code == 3)
-		ft_putstr("Error!\nOpen failed\n");
+	ft_putstr_fd(error, 2);
 	exit(0);
-}
-
-/* Open files and return file descriptor */
-int	ft_open(char *file, char *which_file)
-{
-	int	open_fd;
-
-	if (which_file == "infile") //infile
-		open_fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (which_file == "outfile") //outfile
-		open_fd = open(file, O_RDONLY, 0777);
-	if (open_fd == -1) //error
-		ft_exit(3);
-	return (open_fd);
 }
 
 /*  */
@@ -61,8 +43,8 @@ int	ft_open(char *file, char *which_file)
 	
 // }
 
-/*  */
-void	ft_get_env(char **envp)
+/* Extracts commands path from the environment */
+char	**ft_get_path(char **envp)
 {
 	int	i;
 	char **path_split;
@@ -70,16 +52,15 @@ void	ft_get_env(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		printf("envp[%d] = %s\n", i, envp[i]);
 		if (ft_strncmp(envp[i], "PATH=", LEN_PATH) == 0)
 			path_split = ft_split(envp[i] + LEN_PATH, ':');
 		i++;
 	}
-	// ---- TO PRINT
-	// i = 0;
-	// while (path_split[i])
-	// {
-	// 	printf("%s\n", path_split[i]);
-	// 	i++;
-	// }
+	return (path_split)
+}
+
+/* */
+char	*ft_get_command(char **paths, char *command)
+{
+	
 }

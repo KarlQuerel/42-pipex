@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kquerel <kquerel@student.42.fr>            +#+  +:+       +#+        */
+/*   By: karl <karl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/27 17:59:00 by kquerel           #+#    #+#             */
-/*   Updated: 2023/07/14 19:03:54 by kquerel          ###   ########.fr       */
+/*   Updated: 2023/07/17 18:05:52 by karl             ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef PIPEX_H
 # define PIPEX_H
@@ -32,8 +32,12 @@ typedef struct s_pipex
 }	t_pipex;
 
 /* MAIN.C */
+void	ft_parent(char **av, char **envp, int *pipefd);
+void	ft_child(char **av, char **envp, int *pipefd);
+
 /* UTILS.C */
 void	ft_putstr(char *str);
-void	ft_exit(int exit_code);
-int	ft_open(char *file, char *which_file);
+void	ft_exit(char *error);
+char	**ft_get_path(char **envp);
+char	*ft_get_command(char **paths, char *command);
 #endif

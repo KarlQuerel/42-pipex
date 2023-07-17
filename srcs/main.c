@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kquerel <kquerel@student.42.fr>            +#+  +:+       +#+        */
+/*   By: karl <karl@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/27 17:57:36 by kquerel           #+#    #+#             */
-/*   Updated: 2023/07/14 19:06:00 by kquerel          ###   ########.fr       */
+/*   Updated: 2023/07/17 19:32:48 by karl             ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../includes/pipex.h"
 
@@ -23,25 +23,33 @@
 /* Child function */
 void	ft_child(char **av, char **envp, int *pipefd)
 {
-	int	file_descriptor;
+	int	fd_infile;
+	char	*argument;
+	char	*command;
 	
-	file_descriptor = ft_open(av[1], "infile");
-	dup2(file_descriptor, 0);
+	fd_infile = open(av[1], O_RDONLY);
+	if (fd_infile == 1)
+		ft_exit("Error!\nOpen failed\n");
+	dup2(fd_infile, 0);
 	dup2(pipefd[0], pipefd[1]);
 	close(pipefd[0]);
-	execve();
+	arguments = ft_split(av[2, ' ']);
+	command = ft_get_command();
+	// execve(, envp);
 }
 
 /* Parent function */
-void	ft_parent(char **av, char **envp, int*pipefd)
+void	ft_parent(char **av, char **envp, int *pipefd)
 {
-	int	file_descriptor;
-	
-	file_descriptor = ft_open(av[4], "outfile");
-	dup2(file_descriptor, 1);
+	int	fd_outfile;
+
+	fd_outfile = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	if (fd_outfile == 1)
+		ft_exit("Error!\nOpen failed\n");
+	dup2(fd_outfile, 1);
 	dup2(pipefd[1], pipefd[0]);
 	close(pipefd[1]); // we close the end
-	ft_exec(av[3], 0);
+	execve(/* output de ft_get_command */ av[3], 0); //execve (char* pathname, char** arv, char **envp)
 }
 
 /* Main */
@@ -51,12 +59,13 @@ int	main(int ac, char **av, char **envp)
 	t_pipex	pipex;
 	
 	if (ac != 5)
-		ft_exit(0);
+		ft_exit("Error!\nInvalid number of arguments\n"0);
 	if (pipe(pipex.pipefd) == -1) // if pipe failed
-		ft_exit(1);
+		ft_exit("Error!\nPipe failed\n");
 	pipex.pid = fork();
 	if (pipex.pid == -1) //if fork failed
-		ft_exit(2);
+		ft_exit("Error!\nFork failed\n");
+	
 	if (pipex.pid == 0) // child
 		ft_child(av[2], envp, pipex.pipefd);
 	if (pipex.pid > 0) // parent process
