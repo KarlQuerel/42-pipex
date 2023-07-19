@@ -6,8 +6,8 @@ PATH_LIBFT	= libft
 LIBFT	= ${PATH_LIBFT}/libft.a
 
 PATH_SRCS	= srcs
-SRCS	= ${PATH_SRCS}/main.c	\
-		${PATH_SRCS}/utils.c	\
+SRCS	= ${PATH_SRCS}/main.c\
+		# ${PATH_SRCS}/utils.c	\
 		# ${PATH_SRCS}/algorithm.c	\
 		# ${PATH_SRCS}/lists.c	\
 		# ${PATH_SRCS}/lists_utils.c	\
@@ -21,7 +21,7 @@ OBJS	= ${SRCS:.c=.o}
 
 CC	= cc
 
-C_FLAGS	= -Wall -Werror -Wextra
+C_FLAGS	= -Wall -Werror -Wextra -g3
 
 RM	= rm -f
 

@@ -1,214 +1,204 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: karl <karl@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: kquerel <kquerel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/27 17:57:36 by kquerel           #+#    #+#             */
-/*   Updated: 2023/07/17 19:32:48 by karl             ###   ########.fr       */
+/*   Updated: 2023/07/19 18:59:16 by kquerel          ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-/* Pipe function */
-/* void	ft_pipe(int fd_read, int fd_write)
+/* Extracts command from argv and verify if they are valid */
+char	*ft_get_command(char **path, char *argument)
 {
-	int	pipes[2];
+	char	*to_free;
+	char	*to_return;
+	int	i;
 
-	pipe(pipes);
-} */
-
-/* Child function */
-void	ft_child(char **av, char **envp, int *pipefd)
-{
-	int	fd_infile;
-	char	*argument;
-	char	*command;
-	
-	fd_infile = open(av[1], O_RDONLY);
-	if (fd_infile == 1)
-		ft_exit("Error!\nOpen failed\n");
-	dup2(fd_infile, 0);
-	dup2(pipefd[0], pipefd[1]);
-	close(pipefd[0]);
-	arguments = ft_split(av[2, ' ']);
-	command = ft_get_command();
-	// execve(, envp);
-}
-
-/* Parent function */
-void	ft_parent(char **av, char **envp, int *pipefd)
-{
-	int	fd_outfile;
-
-	fd_outfile = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (fd_outfile == 1)
-		ft_exit("Error!\nOpen failed\n");
-	dup2(fd_outfile, 1);
-	dup2(pipefd[1], pipefd[0]);
-	close(pipefd[1]); // we close the end
-	execve(/* output de ft_get_command */ av[3], 0); //execve (char* pathname, char** arv, char **envp)
-}
-
-/* Main */
-int	main(int ac, char **av, char **envp)
-{
-
-	t_pipex	pipex;
-	
-	if (ac != 5)
-		ft_exit("Error!\nInvalid number of arguments\n"0);
-	if (pipe(pipex.pipefd) == -1) // if pipe failed
-		ft_exit("Error!\nPipe failed\n");
-	pipex.pid = fork();
-	if (pipex.pid == -1) //if fork failed
-		ft_exit("Error!\nFork failed\n");
-	
-	if (pipex.pid == 0) // child
-		ft_child(av[2], envp, pipex.pipefd);
-	if (pipex.pid > 0) // parent process
-		ft_parent(av[3], envp, pipex.pipefd);
-	waitpid(pipex.pid, NULL, 0);
-	waitpid(pipex.pid, NULL, 0);
-	return (0);
-}
-	// ---------------------------------
-
-// 	if (pid == 0) // child process
-// 	{
-// 		close(pipefd[1]); // close unused write end
-// 		dup2(pipefd[0], pipefd[1]);
-// 		printf("Child : I am the child, my pid is %d\n", pid);
-// 		close(pipefd[0]); //close read end
-// 		execve("/bin/ls", &av[2], NULL);
-// 	}
-// 	else if (pid > 0) // parent process
-// 	{
-// 		close(pipefd[0]); // close unused read end
-// 		printf("Parent : I am the parent, my pid is %d\n", pid);
-// 		close(pipefd[1]); // close write end
-// 		wait(NULL); // wait for child
-// 	}
-// 	return (0);
-// }
-/* 	int	pfd[2]; // create a pipe
-	int	pid;
-
-	if (pipe(pfd) == -1)
+	i = 0;
+	while(path[i])
 	{
-		printf("Error: %s\n", strerror(errno));
-		return (1);
+		to_free = ft_strjoin(path[i], "/");
+		to_return = ft_strjoin(to_free, argument);
+		free(to_free);
+		if (access(to_return, 0) == 0)
+			return (to_return);
+		free(to_return);
+		i++;
 	}
-	pid = fork(); // creating a child
-	if (pid == -1)
-	{
-		printf("Error: %s\n", strerror(errno));
-		return (1);
-	}
-	printf("pid = %d\n", pid);
-	
-	return(0); */
-//-------------------------------------------
-/* 	(void)ac;
-	(void)av;
+	return (NULL);
+}
+
+/* Extracts commands path from the environment */
+char	**ft_get_path(char **envp)
+{
 	int	i;
 	char **path_split;
 
 	i = 0;
 	while (envp[i])
 	{
-
 		if (ft_strncmp(envp[i], "PATH=", LEN_PATH) == 0)
 			path_split = ft_split(envp[i] + LEN_PATH, ':');
 		i++;
 	}
-	i = 0;
-	while (path_split[i])
-	{
-		printf("%s\n", path_split[i]);
-		i++;
-	}
-	return(0); */
-//---------------------------------
+	if(path_split == NULL)
+		return (NULL);
+	return (path_split);
+}
 
+
+/* Handles file opening */
+int	ft_open(char **av, int trigger)
+{
+	int	fd_open;
 	
-	/* -----> DUP 2 EXAMPLE
-	int fd;
+	if (trigger == 0)
+		fd_open = open(av[1], O_RDONLY);
+	if (trigger == 1)
+		fd_open = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	if (fd_open < 0)
+		perror("Error"), exit(1);
+	return (fd_open);
+}
 
-	fd = open("test.txt", O_WRONLY | O_CREAT, 0644);
-	// execve();
-	dup2(fd, STDOUT_FILENO);
-	close (fd);
-	printf("KARL TEST\n"); */
+/* First child */
+void	ft_first_child(char **av, char **envp, t_pipex *data)
+{
+	data->fd_infile = ft_open(av, 0);
+	dup2(data->pipe_end[1], 1);
+	close(data->pipe_end[0]);
+	dup2(data->fd_infile, 0);
+	data->argument = ft_split(av[2], ' ');
+	if (!data->argument[0])
+		ft_putstr_fd("Error\nSplit failed!\n", 2), exit (1);
+	data->command = ft_get_command(ft_get_path(envp), data->argument[0]);
+	if (data->command == NULL)
+	{
+		perror("Error");
+		exit(1);
+	}
+	execve(data->command, data->argument, envp);
+}
 
-//---------------------------------
-/* -------> EXECVE EXAMPLE
-	char *args[3];
+/* Second child */
+void	ft_second_child(char **av, char **envp, t_pipex *data)
+{
+	data->fd_outfile = ft_open(av, 1);
+	dup2(data->pipe_end[0], 0);
+	close(data->pipe_end[1]);
+	dup2(data->fd_outfile, 1);
+	data->argument = ft_split(av[3], ' ');
+	if (!data->argument[0])
+		ft_putstr_fd("Error\nSplit failed!\n", 2), exit (1);
+	data->command = ft_get_command(ft_get_path(envp), data->argument[0]);
+	if (data->command == NULL)
+	{
+		perror("Error");
+		exit(1);
+	}
+	execve(data->command, data->argument, envp);
+}
 
-	args[0] = "blablabla";
-	args[1] = "-a";
-	args[2] = NULL;
-	execve("/bin/ls", args, NULL);
-	printf("Testtest\n");
-	return (0); */
+/* Initiates fork on both children */
+void	ft_init_fork(t_pipex *data, int trigger)
+{
+	if (trigger == 1)
+	{
+		data->pid_child1 = fork();
+		printf("child1 = %d\n", data->pid_child1);
+		if (data->pid_child1 < 0)
+			perror("Error"), exit(1);
+	}
+	else if (trigger == 2)
+	{
+		data->pid_child2 = fork();
+		if (data->pid_child2 < 0)
+			perror("Error"), exit(1);
+	}
+}
+
+/* Main */
+int	main(int ac, char **av, char **envp)
+{
+
+	t_pipex	data;
 	
-/* 	pid_t pid;
- 
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
-	}
-	else if (pid == 0)
-	{
-		printf("I am the child process.\n");
-		sleep(2);
-		exit(EXIT_SUCCESS);
-	}
-	else
-	{
-		printf("I am the parent process.\n");
-		wait(NULL);
-		printf("Child process terminated after a 2s delay.\n");
-	}
- 
-	return (EXIT_SUCCESS); */
+	if (ac != 5)
+		return (ft_putstr_fd("Error\nInvalid number of arguments\n", 2), 1);
+	if (pipe(data.pipe_end) < 0)
+		return (perror("Error"), 1);
+	ft_init_fork(&data, 1);
+	if (data.pid_child1 == 0)
+		ft_first_child(av, envp, &data);
+	ft_init_fork(&data, 2);
+	if (data.pid_child2 ==  0)
+		ft_second_child(av, envp, &data);
+	close(data.pipe_end[0]);
+	close(data.pipe_end[1]);
+	waitpid(data.pid_child1, NULL, 0);
+	waitpid(data.pid_child2, NULL, 0); // ca tourne en boucle
+	// free parent
+	return (0);
+}
 
-// int	pipefd[2]; //store the pipe's fds
-// 				// pipefd[0] = read only and pipefd[1] = write only
-	
-// 	pid_t	pid;
-
-// 	//creates a pipe
-// 	if (pipe(pipefd) == -1) // if pipe creation failed
+// /* Child function */
+// void	ft_child(char **av, char **envp, t_pipex data)
+// {
+// 	dup2(data.fd_infile, 1);
+// 	dup2(data.pipe_end[1], 1);
+// 	close(data.pipe_end[0]);
+// 	data.argument = ft_split(av[2], ' ');
+// 	data.command = ft_get_command(ft_get_path(envp), data.argument[0]);
+// 	if (data.command == NULL)
 // 	{
-// 		printf("error\n");
+// 		ft_free(data, 0);
 // 		exit(0);
 // 	}
+// 	execve(data.command, data.argument, envp);
+// }
 
-// 	pid = fork(); // parent receives PID of child, child receives PID 0
-// 	if (pid == -1) //fork error
+// /* Parent function */
+// void	ft_parent(char **av, char **envp, t_pipex data)
+// {
+// 	dup2(data.fd_outfile, 0);
+// 	dup2(data.pipe_end[0], 0);
+// 	close(data.pipe_end[1]);
+// 	data.argument = ft_split(av[3], ' ');
+// 	data.command = ft_get_command(ft_get_path(envp), data.argument[0]);
+// 	if (data.command == NULL)
 // 	{
-// 		printf("error\n");
+// 		ft_free(data, 1);
 // 		exit(0);
 // 	}
-// 	if (pid == 0) // child process
-// 	{
-// 		close(pipefd[1]); // close unused write end
-// 		dup2(pipefd[0], pipefd[1]);
-// 		printf("Child : I am the child, my pid is %d\n", pid);
-// 		close(pipefd[0]); //close read end
-// 		execve("/bin/ls", &av[2], NULL);
-// 	}
-// 	else if (pid > 0) // parent process
-// 	{
-// 		close(pipefd[0]); // close unused read end
-// 		printf("Parent : I am the parent, my pid is %d\n", pid);
-// 		close(pipefd[1]); // close write end
-// 		wait(NULL); // wait for child
-// 	}
+// 	execve(data.command, data.argument, envp);
+// }
+
+	
+	
+	
+	
+	
+	
+	
+	
+// 	data.fd_infile = ft_open(av, 0);
+// 	data.fd_outfile = ft_open(av, 1);
+// 	if (pipe(data.pipe_end) == -1)
+// 		ft_exit("Pipe failed\n");
+// 	data.pid = fork();
+// 	if (data.pid == -1)
+// 		ft_exit("Fork failed\n");
+// 	if (data.pid > 0)
+// 		ft_parent(av, envp, data);
+// 	if (data.pid == 0)
+// 		ft_child(av, envp, data);
+// 	waitpid(data.pid, NULL, 0); // a regarder en detail
 // 	return (0);
 // }
+// ./pipex infile ls grep outile
+// 	 0	   1	  2	 3	  4
