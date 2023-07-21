@@ -6,34 +6,27 @@
 /*   By: kquerel <kquerel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/12 17:55:33 by kquerel           #+#    #+#             */
-/*   Updated: 2023/07/19 16:51:54 by kquerel          ###   ########.fr       */
+/*   Updated: 2023/07/21 14:42:58 by kquerel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-/* Handles exit behavior */
-void	ft_exit(char *error)
+/* Handles file opening */
+int	ft_open(char **av, int trigger)
 {
-	ft_putstr_fd(error, 2);
-	exit(0);
-}
+	int	fd_open;
 
-/* Extracts commands path from the environment */
-char	**ft_get_path(char **envp)
-{
-	int	i;
-	char **path_split;
-
-	i = 0;
-	*path_split = NULL;
-	while (envp[i])
+	if (trigger == 0)
+		fd_open = open(av[1], O_RDONLY);
+	if (trigger == 1)
+		fd_open = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	if (fd_open < 0)
 	{
-		if (ft_strncmp(envp[i], "PATH=", LEN_PATH) == 0)
-			path_split = ft_split(envp[i] + LEN_PATH, ':');
-		i++;
+		perror("Error");
+		exit(1);
 	}
-	return (path_split);
+	return (fd_open);
 }
 
 /* Extracts command from argv and verify if they are valid */
@@ -41,10 +34,10 @@ char	*ft_get_command(char **path, char *argument)
 {
 	char	*to_free;
 	char	*to_return;
-	int	i;
+	int		i;
 
 	i = 0;
-	while(path[i])
+	while (path[i])
 	{
 		to_free = ft_strjoin(path[i], "/");
 		to_return = ft_strjoin(to_free, argument);
@@ -57,41 +50,20 @@ char	*ft_get_command(char **path, char *argument)
 	return (NULL);
 }
 
-/* Handles free behavior */
-void	ft_free(t_pipex data, int trigger)
+/* Extracts commands path from the environment */
+char	**ft_get_path(char **envp)
 {
-	int	i;
+	int		i;
+	char	**path_split;
 
 	i = 0;
-	if (trigger == 0)
+	while (envp[i])
 	{
-		while (data.argument[i])
-		{
-			free(data.argument[i]);
-			i++;
-		}
-		free(data.argument);
-		free(data.command);
+		if (ft_strncmp(envp[i], "PATH=", LEN_PATH) == 0)
+			path_split = ft_split(envp[i] + LEN_PATH, ':');
+		i++;
 	}
-	i = 0;
-	if (trigger == 1)
-	{
-		close(data.fd_infile);
-		close(data.fd_outfile);
-		// while(data.)
-	}
-}
-
-/* Opens infile or outfile depending on trigger */
-int	ft_open(char **av, int trigger)
-{
-	int	fd_open;
-
-	if (trigger == 0)
-		fd_open = open(av[1], O_RDONLY);
-	if (trigger == 1)
-		fd_open = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (fd_open == -1)
-		ft_exit("Open failed\n");
-	return (fd_open);
+	if (path_split == NULL)
+		return (NULL);
+	return (path_split);
 }

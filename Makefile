@@ -7,15 +7,7 @@ LIBFT	= ${PATH_LIBFT}/libft.a
 
 PATH_SRCS	= srcs
 SRCS	= ${PATH_SRCS}/main.c\
-		# ${PATH_SRCS}/utils.c	\
-		# ${PATH_SRCS}/algorithm.c	\
-		# ${PATH_SRCS}/lists.c	\
-		# ${PATH_SRCS}/lists_utils.c	\
-		# ${PATH_SRCS}/check_utils.c	\
-		# ${PATH_SRCS}/check.c	\
-		# ${PATH_SRCS}/operations.c	\
-		# ${PATH_SRCS}/operations_utils.c	\
-		# ${PATH_SRCS}/exit.c	\
+		${PATH_SRCS}/utils.c	\
 
 OBJS	= ${SRCS:.c=.o}
 
