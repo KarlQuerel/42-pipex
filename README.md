@@ -20,7 +20,7 @@ The `so_long` project aims to introduce students to:
 ## Installation
 1. Clone this repository to your local machine:
 	```sh
-	git clone https://github.com/yourusername/pipex.git
+	git clone https://github.com/KarlQuerel/42-pipex.git
 	```
 
 2. Navigate to the project directory:
