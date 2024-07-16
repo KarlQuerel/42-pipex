@@ -25,7 +25,7 @@ The `so_long` project aims to introduce students to:
 
 2. Navigate to the project directory:
 	```sh
-	cd pipex
+	cd 42-pipex
 	```
 
 3. Compile the project using `make`:
