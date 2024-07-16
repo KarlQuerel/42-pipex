@@ -7,7 +7,7 @@ The `pipex` project is designed to teach students about inter-process communicat
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Examples](#examples)
+- [Example](#example)
 
 ## Introduction
 The `so_long` project aims to introduce students to:
